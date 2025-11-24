@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydrateMe - Water Reminder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <main class="container">
+        <div class="glass-card">
+            <header>
+                <div class="icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="water-icon">
+                        <path d="M12 22c4.97 0 9-4.03 9-9-4.5 0-9-9-9-9s-4.5 9-9 9c0 4.97 4.03 9 9 9z" opacity="0.5"/>
+                        <path d="M12 22c4.97 0 9-4.03 9-9-4.5 0-9-9-9-9s-4.5 9-9 9c0 4.97 4.03 9 9 9z"/>
+                    </svg>
+                </div>
+                <h1>HydrateMe</h1>
+                <p class="subtitle">Stay healthy, stay hydrated.</p>
+            </header>
+
+            <form id="reminderForm">
+                <div class="input-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" placeholder="e.g., Sampath" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Gender</label>
+                    <div class="gender-options">
+                        <label class="radio-card">
+                            <input type="radio" name="gender" value="male" checked>
+                            <span class="card-content">
+                                <span class="emoji">👨</span>
+                                <span>Male</span>
+                            </span>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="gender" value="female">
+                            <span class="card-content">
+                                <span class="emoji">👩</span>
+                                <span>Female</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="interval">Reminder Interval (minutes)</label>
+                    <div class="range-wrapper">
+                        <input type="range" id="interval" min="15" max="120" step="15" value="60">
+                        <span id="intervalValue">60 min</span>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" id="startBtn" class="btn btn-primary">
+                        Start Reminders
+                    </button>
+                    <button type="button" id="stopBtn" class="btn btn-secondary hidden">
+                        Stop Reminders
+                    </button>
+                </div>
+            </form>
+
+            <div id="statusMessage" class="status hidden">
+                <span class="pulse"></span> Active
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Designed and developed by sampathkumar</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
