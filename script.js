@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const intervalInput = document.getElementById('interval');
     const intervalValue = document.getElementById('intervalValue');
     const statusMessage = document.getElementById('statusMessage');
-    
+
     let reminderIntervalId = null;
 
     // Update slider value display
@@ -38,35 +38,41 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     }
 
-    // Get catchy message based on gender
-    function getReminderMessage(name, gender) {
-        const messages = {
-            male: [
-                `Hey ${name}, stay sharp! Time for some water. 💧`,
-                `Hydrate like a boss, ${name}! 🥤`,
-                `Fuel up, ${name}. Your body needs water! 💪`,
-                `Don't let dehydration beat you, ${name}. Drink up!`,
-                `Level up your energy, ${name}. Take a sip!`
-            ],
-            female: [
-                `Hey ${name}, glow time! Drink some water. ✨`,
-                `Stay beautiful and hydrated, ${name}! 💧`,
-                `Self-care alert, ${name}! Time for a glass of water. 🌸`,
-                `Keep that skin glowing, ${name}. Drink up! 🥤`,
-                `Refresh yourself, ${name}. You deserve a break!`
-            ],
-            other: [
-                `Hey ${name}, time to hydrate! 💧`,
-                `Stay fresh, ${name}! Drink some water. 🥤`,
-                `Water break! Keep going, ${name}. ✨`,
-                `Your body will thank you, ${name}. Drink up!`,
-                `Stay healthy, ${name}. Take a sip!`
-            ]
-        };
+    // Load User Data from LocalStorage
+    function loadUserData() {
+        const savedName = localStorage.getItem('hydrate_name');
+        const savedInterval = localStorage.getItem('hydrate_interval');
 
-        const category = messages[gender] ? messages[gender] : messages['other'];
-        const randomIndex = Math.floor(Math.random() * category.length);
-        return category[randomIndex];
+        if (savedName) {
+            document.getElementById('name').value = savedName;
+        }
+        if (savedInterval) {
+            intervalInput.value = savedInterval;
+            intervalValue.textContent = `${savedInterval} min`;
+        }
+    }
+
+    loadUserData();
+
+    // Get catchy message (Gender Neutral)
+    function getReminderMessage(name) {
+        const messages = [
+            `Hey ${name}, stay sharp! Time for some water. 💧`,
+            `Hydrate like a boss, ${name}! 🥤`,
+            `Fuel up, ${name}. Your body needs water! 💪`,
+            `Don't let dehydration beat you, ${name}. Drink up!`,
+            `Level up your energy, ${name}. Take a sip!`,
+            `Hey ${name}, glow time! Drink some water. ✨`,
+            `Stay beautiful and hydrated, ${name}! 💧`,
+            `Self-care alert, ${name}! Time for a glass of water. 🌸`,
+            `Keep that skin glowing, ${name}. Drink up! 🥤`,
+            `Refresh yourself, ${name}. You deserve a break!`,
+            `Water break! Keep going, ${name}. ✨`,
+            `Your body will thank you, ${name}. Drink up!`
+        ];
+
+        const randomIndex = Math.floor(Math.random() * messages.length);
+        return messages[randomIndex];
     }
 
     // Start Reminders
@@ -88,9 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startReminders() {
         const name = document.getElementById('name').value;
-        const gender = document.querySelector('input[name="gender"]:checked').value;
         const intervalMinutes = parseInt(intervalInput.value);
-        
+
+        // Save to LocalStorage
+        localStorage.setItem('hydrate_name', name);
+        localStorage.setItem('hydrate_interval', intervalMinutes);
+
         // Clear existing interval if any
         if (reminderIntervalId) clearInterval(reminderIntervalId);
 
@@ -98,10 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
         startBtn.classList.add('hidden');
         stopBtn.classList.remove('hidden');
         statusMessage.classList.remove('hidden');
-        
+
         // Disable inputs
         document.getElementById('name').disabled = true;
-        document.querySelectorAll('input[name="gender"]').forEach(i => i.disabled = true);
         intervalInput.disabled = true;
 
         // Send immediate confirmation
@@ -112,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set Interval
         reminderIntervalId = setInterval(() => {
-            const message = getReminderMessage(name, gender);
+            const message = getReminderMessage(name);
             new Notification("Time to Hydrate!", {
                 body: message,
                 icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png",
@@ -135,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Enable inputs
         document.getElementById('name').disabled = false;
-        document.querySelectorAll('input[name="gender"]').forEach(i => i.disabled = false);
         intervalInput.disabled = false;
     });
 });
