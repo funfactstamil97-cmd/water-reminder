@@ -2,15 +2,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reminderForm');
     const startBtn = document.getElementById('startBtn');
     const stopBtn = document.getElementById('stopBtn');
-    const intervalInput = document.getElementById('interval');
-    const intervalValue = document.getElementById('intervalValue');
+    // Chip Selection Logic
+    const chips = document.querySelectorAll('.chip');
+    const hiddenIntervalInput = document.getElementById('interval');
     const statusMessage = document.getElementById('statusMessage');
 
     let reminderIntervalId = null;
 
-    // Update slider value display
-    intervalInput.addEventListener('input', (e) => {
-        intervalValue.textContent = `${e.target.value} min`;
+    chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            // Remove active class from all
+            chips.forEach(c => c.classList.remove('active'));
+            // Add active to clicked
+            chip.classList.add('active');
+            // Update hidden input
+            hiddenIntervalInput.value = chip.dataset.value;
+        });
     });
 
     // Request Notification Permission
@@ -27,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (Notification.permission !== "denied") {
             Notification.requestPermission().then((permission) => {
                 if (permission === "granted") {
-                    new Notification("HydrateMe", {
+                    new Notification("HydrateMe By Sam", {
                         body: "Awesome! We'll remind you to drink water.",
                         icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png" // Generic water icon
                     });
@@ -47,8 +54,15 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('name').value = savedName;
         }
         if (savedInterval) {
-            intervalInput.value = savedInterval;
-            intervalValue.textContent = `${savedInterval} min`;
+            hiddenIntervalInput.value = savedInterval;
+            // Update active chip
+            chips.forEach(c => {
+                if (c.dataset.value === savedInterval) {
+                    c.classList.add('active');
+                } else {
+                    c.classList.remove('active');
+                }
+            });
         }
     }
 
@@ -94,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startReminders() {
         const name = document.getElementById('name').value;
-        const intervalMinutes = parseInt(intervalInput.value);
+        const intervalMinutes = parseInt(hiddenIntervalInput.value);
 
         // Save to LocalStorage
         localStorage.setItem('hydrate_name', name);
@@ -110,23 +124,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Disable inputs
         document.getElementById('name').disabled = true;
-        intervalInput.disabled = true;
+        chips.forEach(c => c.style.pointerEvents = 'none'); // Disable chips
 
         // Send immediate confirmation
         new Notification("HydrateMe Started", {
-            body: `We'll remind you every ${intervalMinutes} minutes.`,
+            body: `We'll remind you every ${intervalMinutes} minute${intervalMinutes > 1 ? 's' : ''}.`,
             icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png"
         });
 
         // Set Interval
+        // Using 60000ms for 1 minute. 
+        const intervalMs = intervalMinutes * 60 * 1000;
+
+        console.log(`Starting reminder for ${intervalMinutes} minutes (${intervalMs}ms)`);
+
         reminderIntervalId = setInterval(() => {
             const message = getReminderMessage(name);
+            console.log("Triggering notification:", message);
+
             new Notification("Time to Hydrate!", {
                 body: message,
                 icon: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png",
-                requireInteraction: true // Keeps notification until user clicks
+                requireInteraction: true, // Keeps notification until user clicks
+                tag: 'hydration-reminder' // Prevents stacking if multiple fire
             });
-        }, intervalMinutes * 60 * 1000);
+        }, intervalMs);
     }
 
     // Stop Reminders
@@ -143,6 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Enable inputs
         document.getElementById('name').disabled = false;
-        intervalInput.disabled = false;
+        chips.forEach(c => c.style.pointerEvents = 'auto'); // Enable chips
     });
 });
